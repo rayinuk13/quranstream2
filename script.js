@@ -1,9 +1,5 @@
-// Global variables
-let reciters = [];
-let surahs = [];
-let currentReciter = null;
-let tracks = [];
-let currentTrack = 0;
+let reciters = [], surahs = [], currentReciter = null;
+let tracks = [], currentTrack = 0;
 
 const reciterListDiv = document.getElementById("reciterList");
 const surahListDiv = document.getElementById("surahList");
@@ -14,63 +10,54 @@ const progress = document.getElementById("progress");
 const searchBar = document.getElementById("searchBar");
 const quranPlayerBar = document.getElementById("quranPlayerBar");
 
-// Fetch reciters and surahs from Quran.com API
+// Fetch reciters and surahs
 async function fetchData() {
-  // Reciters
   const reciterRes = await fetch("https://api.quran.com/api/v4/recitations");
-  const reciterData = await reciterRes.json();
-  reciters = reciterData.data;
-
-  reciters.forEach(reciter => {
+  reciters = (await reciterRes.json()).data;
+  reciters.forEach(r => {
     const div = document.createElement("div");
     div.className = "reciterCard";
-    div.textContent = reciter.name;
-    div.onclick = () => selectReciter(reciter);
+    div.textContent = r.name;
+    div.onclick = () => selectReciter(r);
     reciterListDiv.appendChild(div);
   });
 
-  // Surahs
   const surahRes = await fetch("https://api.quran.com/api/v4/chapters");
-  const surahData = await surahRes.json();
-  surahs = surahData.data;
+  surahs = (await surahRes.json()).data;
 }
 
 fetchData();
 
-// Select reciter
 function selectReciter(reciter) {
   currentReciter = reciter;
   surahListDiv.innerHTML = "";
-  surahs.forEach(surah => {
+  surahs.forEach(s => {
     const div = document.createElement("div");
     div.className = "surahCard";
-    div.textContent = `${surah.id}. ${surah.name_simple}`;
-    div.onclick = () => addTrack(surah);
+    div.textContent = `${s.id}. ${s.name_simple}`;
+    div.onclick = () => addTrack(s);
     surahListDiv.appendChild(div);
   });
 }
 
-// Add surah to playlist and play
 function addTrack(surah) {
   if(!currentReciter) return;
   const url = `${currentReciter.audio_url}/${surah.id}.mp3`;
-  tracks.push({title: `${surah.name_simple} - ${currentReciter.name}`, url});
+  tracks.push({title:`${surah.name_simple} - ${currentReciter.name}`, url});
   updatePlaylist();
   playTrack(tracks.length - 1);
 }
 
-// Update playlist display
 function updatePlaylist() {
   playlistUL.innerHTML = "";
-  tracks.forEach((track, idx) => {
+  tracks.forEach((t, idx) => {
     const li = document.createElement("li");
-    li.textContent = track.title;
+    li.textContent = t.title;
     li.onclick = () => playTrack(idx);
     playlistUL.appendChild(li);
   });
 }
 
-// Play selected track
 function playTrack(idx) {
   currentTrack = idx;
   audio.src = tracks[idx].url;
@@ -80,69 +67,32 @@ function playTrack(idx) {
 
 // Controls
 document.getElementById("playPause").onclick = () => {
-  if(audio.paused){
-    audio.play();
-    document.getElementById("playPause").innerHTML = '<i class="fas fa-pause"></i>';
-  } else {
-    audio.pause();
-    document.getElementById("playPause").innerHTML = '<i class="fas fa-play"></i>';
-  }
+  if(audio.paused){ audio.play(); document.getElementById("playPause").innerHTML = '<i class="fas fa-pause"></i>'; }
+  else{ audio.pause(); document.getElementById("playPause").innerHTML = '<i class="fas fa-play"></i>'; }
 };
-
-document.getElementById("back10").onclick = () => audio.currentTime -= 10;
-document.getElementById("forward10").onclick = () => audio.currentTime += 10;
+document.getElementById("back10").onclick = () => audio.currentTime -=10;
+document.getElementById("forward10").onclick = () => audio.currentTime +=10;
 document.getElementById("nextTrack").onclick = () => nextTrack();
 document.getElementById("prevTrack").onclick = () => prevTrack();
 
-// Next and previous track
-function nextTrack() {
-  currentTrack = (currentTrack + 1) % tracks.length;
-  playTrack(currentTrack);
-}
-
-function prevTrack() {
-  currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
-  playTrack(currentTrack);
-}
+function nextTrack(){ currentTrack=(currentTrack+1)%tracks.length; playTrack(currentTrack); }
+function prevTrack(){ currentTrack=(currentTrack-1+tracks.length)%tracks.length; playTrack(currentTrack); }
 
 // Progress bar
-audio.addEventListener("timeupdate", () => {
-  const percent = (audio.currentTime / audio.duration) * 100;
-  progress.style.width = percent + "%";
-});
+audio.addEventListener("timeupdate",()=>{ progress.style.width=(audio.currentTime/audio.duration)*100+"%"; });
+document.getElementById("progressContainer").addEventListener("click", e=>{ audio.currentTime=(e.offsetX/e.currentTarget.clientWidth)*audio.duration; });
 
-document.getElementById("progressContainer").addEventListener("click", (e) => {
-  const width = e.currentTarget.clientWidth;
-  const clickX = e.offsetX;
-  audio.currentTime = (clickX / width) * audio.duration;
-});
+// Expand player
+document.getElementById("expandBtn").onclick = ()=>{ quranPlayerBar.classList.toggle("expanded"); quranPlayerBar.classList.toggle("collapsed"); };
 
-// Expand/collapse player
-document.getElementById("expandBtn").onclick = () => {
-  quranPlayerBar.classList.toggle("expanded");
-  quranPlayerBar.classList.toggle("collapsed");
-};
-
-// Search functionality
-searchBar.addEventListener("input", (e) => {
+// Search bar
+searchBar.addEventListener("input", e=>{
   const query = e.target.value.toLowerCase();
-  reciterListDiv.innerHTML = "";
-  surahListDiv.innerHTML = "";
-  reciters.filter(r => r.name.toLowerCase().includes(query))
-          .forEach(reciter => {
-            const div = document.createElement("div");
-            div.className = "reciterCard";
-            div.textContent = reciter.name;
-            div.onclick = () => selectReciter(reciter);
-            reciterListDiv.appendChild(div);
-          });
-
-  surahs.filter(s => s.name_simple.toLowerCase().includes(query))
-        .forEach(s => {
-          const div = document.createElement("div");
-          div.className = "surahCard";
-          div.textContent = `${s.id}. ${s.name_simple}`;
-          div.onclick = () => addTrack(s);
-          surahListDiv.appendChild(div);
-        });
+  reciterListDiv.innerHTML=""; surahListDiv.innerHTML="";
+  reciters.filter(r=>r.name.toLowerCase().includes(query)).forEach(r=>{
+    const div=document.createElement("div"); div.className="reciterCard"; div.textContent=r.name; div.onclick=()=>selectReciter(r); reciterListDiv.appendChild(div);
+  });
+  surahs.filter(s=>s.name_simple.toLowerCase().includes(query)).forEach(s=>{
+    const div=document.createElement("div"); div.className="surahCard"; div.textContent=`${s.id}. ${s.name_simple}`; div.onclick=()=>addTrack(s); surahListDiv.appendChild(div);
+  });
 });
