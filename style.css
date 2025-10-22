@@ -2,21 +2,70 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding-bottom: 120px; /* space for player */
+  padding-bottom: 120px; /* space for bottom player */
 }
 
 header {
   padding: 20px;
-  text-align: center;
   background: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border-bottom: 1px solid #ccc;
+}
+
+header h1 {
+  margin: 0 0 10px 0;
+}
+
+#searchBar {
+  width: 80%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 main {
   padding: 20px;
 }
 
-/* Bottom Quran player styling */
+h2 {
+  margin-top: 20px;
+}
+
+/* Reciter & Surah Lists */
+#reciterList, #surahList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reciterCard, .surahCard {
+  background: #eee;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1 1 150px;
+  text-align: center;
+}
+
+.reciterCard:hover, .surahCard:hover {
+  background: #ddd;
+}
+
+/* Playlist */
+#playlistSection ul, #myPlaylist {
+  list-style: none;
+  padding: 0;
+}
+
+#myPlaylist li {
+  padding: 5px;
+  cursor: pointer;
+}
+
+/* Bottom Player */
 #quranPlayerBar {
   position: fixed;
   bottom: 0;
@@ -25,10 +74,9 @@ main {
   background: #1a1a1a;
   color: white;
   box-shadow: 0 -3px 10px rgba(0,0,0,0.5);
-  font-family: Arial, sans-serif;
-  z-index: 1000;
   transition: height 0.3s ease;
   overflow: hidden;
+  z-index: 1000;
 }
 
 #quranPlayerBar.collapsed {
@@ -44,7 +92,6 @@ main {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  cursor: pointer;
 }
 
 #playerHeader span {
@@ -93,25 +140,5 @@ main {
   height: 5px;
   background: #00ffbf;
   width: 0%;
-  border-radius: 5px;
-}
-
-#playlist {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0 0;
-  max-height: 70px;
-  overflow-y: auto;
-}
-
-#playlist li {
-  padding: 5px;
-  cursor: pointer;
-}
-
-#playlist li.active {
-  background: #00ffbf;
-  color: #1a1a1a;
-  font-weight: bold;
   border-radius: 5px;
 }
