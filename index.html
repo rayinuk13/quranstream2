@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iqra Project - Quran Player</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- FontAwesome for icons -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>Iqra Project</h1>
+    <p>Listen to Salah Bukhatir recitations!</p>
+  </header>
+
+  <main>
+    <section>
+      <p>Explore recitations below:</p>
+      <ul>
+        <li>Surah Al-Fatihah</li>
+        <li>Surah Al-Baqarah</li>
+        <li>Surah Al-Ikhlas</li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- Bottom Quran Player -->
+  <div id="quranPlayerBar" class="collapsed">
+    <div id="playerHeader">
+      <span id="trackTitle">Salah Bukhatir</span>
+      <button id="expandBtn"><i class="fas fa-chevron-up"></i></button>
+    </div>
+
+    <div id="playerBody">
+      <audio id="audioPlayer" preload="metadata"></audio>
+      <div id="controls">
+        <button id="back10"><i class="fas fa-undo"></i></button>
+        <button id="playPause"><i class="fas fa-play"></i></button>
+        <button id="forward10"><i class="fas fa-redo"></i></button>
+        <button id="nextTrack"><i class="fas fa-step-forward"></i></button>
+      </div>
+      <div id="progressContainer">
+        <div id="progress"></div>
+      </div>
+      <ul id="playlist">
+        <li class="active" onclick="selectTrack(0)">Surah Al-Fatihah</li>
+        <li onclick="selectTrack(1)">Surah Al-Baqarah</li>
+        <li onclick="selectTrack(2)">Surah Al-Ikhlas</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
